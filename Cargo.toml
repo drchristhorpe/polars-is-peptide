@@ -1,0 +1,28 @@
+[package]
+name = "polars_is_peptide"
+version = "0.1.0"
+edition = "2021"
+description = "Polars expression plugin for validating peptide sequences"
+license = "MIT"
+publish = false
+
+[lib]
+name = "_internal"
+crate-type = ["cdylib"]
+
+[dependencies]
+# polars is left unpinned on purpose: pyo3-polars pins the polars version it is
+# ABI-compatible with, and pinning it independently here is the classic way to
+# end up with an inscrutable link error. Let Cargo resolve it transitively.
+polars = { version = "*", default-features = false }
+# pyo3 is held at 0.28 because that is what pyo3-polars 0.27 links against.
+# Bumping it independently breaks the build with a `links = "python"` conflict.
+pyo3 = { version = "0.28", features = ["extension-module", "abi3-py314"] }
+pyo3-polars = { version = "0.27", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = "symbols"

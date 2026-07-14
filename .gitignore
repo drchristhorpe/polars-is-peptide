@@ -1,0 +1,69 @@
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+wheels/
+*.egg-info/
+.eggs/
+sdist/
+share/python-wheels/
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Testing / coverage / caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Type checkers
+.dmypy.json
+dmypy.json
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ---------- Rust ----------
+target/
+**/*.rs.bk
+*.pdb
+# NOTE: Cargo.lock and uv.lock ARE committed — this crate is shipped as a
+# compiled wheel, so a pinned dependency graph is what we want for reproducible
+# builds and CI.
+
+# ---------- Scratch / data ----------
+tmp/
+*.parquet
+*.arrow
+*.ipc
+
+# ---------- Editors / OS ----------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ---------- Env / secrets ----------
+.env
+.env.*
+!.env.example
