@@ -4,6 +4,12 @@ version = "0.1.0"
 edition = "2021"
 description = "Polars expression plugin for validating peptide sequences"
 license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/drchristhorpe/polars-is-peptide"
+repository = "https://github.com/drchristhorpe/polars-is-peptide"
+keywords = ["polars", "bioinformatics", "peptide", "protein"]
+categories = ["science"]
+# The Rust crate is not published to crates.io — it ships inside the Python wheel.
 publish = false
 
 [lib]

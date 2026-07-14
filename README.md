@@ -156,6 +156,26 @@ One pinning note, because it will bite whoever upgrades next: **`pyo3` is held a
 because that's what `pyo3-polars` 0.27 links against.** Bumping `pyo3` on its own fails
 the build with a `links = "python"` conflict. Bump the two together, or neither.
 
+### Releasing
+
+Wheels are built and published by [CI](.github/workflows/CI.yml) on a version tag, using
+PyPI [Trusted Publishing](https://docs.pypi.org/trusted-publishers/) — there is no API
+token stored in the repo or in GitHub secrets.
+
+```bash
+# bump the version in pyproject.toml AND Cargo.toml, add a CHANGELOG entry, then:
+git tag v0.1.0 && git push origin v0.1.0
+```
+
+That builds Linux (x86_64, aarch64), macOS (x86_64, arm64) and Windows (x64) wheels plus
+an sdist, runs the test suite against each built wheel, and publishes to PyPI. The matrix
+is deliberately narrower than maturin's default, which also emits armv7, s390x, ppc64le
+and 32-bit targets — Polars publishes wheels for none of those, so our own dependency
+wouldn't resolve there.
+
+Because the wheels are `abi3-py314`, one wheel per platform covers 3.14 and every later
+3.x. Nothing needs rebuilding when 3.15 lands.
+
 ## Licence
 
 MIT.

@@ -1,0 +1,177 @@
+# Adapted from `maturin generate-ci github`.
+#
+# The matrix is deliberately narrower than maturin's default: it emits armv7,
+# s390x, ppc64le, 32-bit x86 and free-threaded targets, and Polars publishes
+# wheels for none of them — the pytest step would fail to resolve our own
+# dependency. We build exactly the platforms Polars supports.
+#
+# Wheels are abi3-py314, so one wheel per platform covers 3.14 and every later
+# 3.x. Publishing happens only on a version tag, via PyPI Trusted Publishing —
+# no API token is stored anywhere.
+
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # Fast feedback: lint and test the Rust before spinning up the wheel matrix.
+  rust:
+    name: cargo check + clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --check
+      - run: cargo clippy --lib -- -D warnings
+
+  linux:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x86_64, aarch64]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+      - name: Build wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          args: --release --out dist
+          sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          manylinux: auto
+      - name: Upload wheel
+        uses: actions/upload-artifact@v6
+        with:
+          name: wheels-linux-${{ matrix.target }}
+          path: dist
+      - uses: astral-sh/setup-uv@v7
+        if: matrix.target == 'x86_64'
+      - name: pytest
+        if: matrix.target == 'x86_64'
+        run: |
+          set -e
+          uv venv .venv --python 3.14
+          source .venv/bin/activate
+          uv pip install polars-is-peptide --no-index --no-deps --find-links dist --reinstall
+          uv pip install polars-is-peptide pytest
+          pytest
+
+  macos:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15-intel
+            target: x86_64
+          - runner: macos-latest
+            target: aarch64
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+      - name: Build wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          args: --release --out dist
+          sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+      - name: Upload wheel
+        uses: actions/upload-artifact@v6
+        with:
+          name: wheels-macos-${{ matrix.target }}
+          path: dist
+      - uses: astral-sh/setup-uv@v7
+      - name: pytest
+        run: |
+          set -e
+          uv venv .venv --python 3.14
+          source .venv/bin/activate
+          uv pip install polars-is-peptide --no-index --no-deps --find-links dist --reinstall
+          uv pip install polars-is-peptide pytest
+          pytest
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          architecture: x64
+      - name: Build wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          target: x64
+          args: --release --out dist
+          sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+      - name: Upload wheel
+        uses: actions/upload-artifact@v6
+        with:
+          name: wheels-windows-x64
+          path: dist
+      - uses: astral-sh/setup-uv@v7
+      - name: pytest
+        shell: bash
+        run: |
+          set -e
+          uv venv .venv --python 3.14
+          source .venv/Scripts/activate
+          uv pip install polars-is-peptide --no-index --no-deps --find-links dist --reinstall
+          uv pip install polars-is-peptide pytest
+          pytest
+
+  sdist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build sdist
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: --out dist
+      - name: Upload sdist
+        uses: actions/upload-artifact@v6
+        with:
+          name: wheels-sdist
+          path: dist
+
+  release:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [rust, linux, macos, windows, sdist]
+    environment:
+      name: pypi
+      url: https://pypi.org/p/polars-is-peptide
+    permissions:
+      id-token: write # PyPI Trusted Publishing (OIDC) — this is what replaces the API token
+      contents: write # attach artifacts to the GitHub Release
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: wheels-*
+          merge-multiple: true
+          path: dist
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: "dist/*"
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@release/v1

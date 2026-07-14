@@ -8,15 +8,38 @@ version = "0.1.0"
 description = "A Polars expression plugin that validates peptide sequences at Rust speed"
 readme = "README.md"
 requires-python = ">=3.14"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "Chris Thorpe", email = "drchristhorpe@googlemail.com" }]
-keywords = ["polars", "bioinformatics", "peptide", "protein", "validation"]
+keywords = [
+    "polars",
+    "bioinformatics",
+    "peptide",
+    "protein",
+    "proteomics",
+    "amino-acid",
+    "sequence",
+    "validation",
+]
 classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
     "Programming Language :: Rust",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
 ]
 dependencies = ["polars>=1.42"]
+
+[project.urls]
+Homepage = "https://github.com/drchristhorpe/polars-is-peptide"
+Repository = "https://github.com/drchristhorpe/polars-is-peptide"
+Issues = "https://github.com/drchristhorpe/polars-is-peptide/issues"
+Changelog = "https://github.com/drchristhorpe/polars-is-peptide/blob/main/CHANGELOG.md"
 
 [dependency-groups]
 dev = [
