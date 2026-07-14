@@ -55,6 +55,7 @@ tmp/
 *.ipc
 
 # ---------- Editors / OS ----------
+.claude/
 .vscode/
 .idea/
 *.swp
