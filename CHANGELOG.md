@@ -6,7 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [0.1.0] — 2026-07-14
 
-First release. A Polars expression plugin, Rust core, that validates peptide sequences.
+First release, [on PyPI](https://pypi.org/project/polars-is-peptide/). A Polars
+expression plugin, Rust core, that validates peptide sequences.
+
+Wheels for Linux (x86_64, aarch64), macOS (x86_64, arm64) and Windows (x64), plus an
+sdist. They are `abi3-py314`, so one wheel per platform covers Python 3.14 and every
+later 3.x. Published from CI by PyPI Trusted Publishing — no API token exists.
 
 ### Added
 

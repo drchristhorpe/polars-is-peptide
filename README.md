@@ -1,5 +1,10 @@
 # polars-is-peptide
 
+[![PyPI](https://img.shields.io/pypi/v/polars-is-peptide)](https://pypi.org/project/polars-is-peptide/)
+[![Python](https://img.shields.io/pypi/pyversions/polars-is-peptide)](https://pypi.org/project/polars-is-peptide/)
+[![CI](https://github.com/drchristhorpe/polars-is-peptide/actions/workflows/CI.yml/badge.svg)](https://github.com/drchristhorpe/polars-is-peptide/actions/workflows/CI.yml)
+[![Licence: MIT](https://img.shields.io/badge/licence-MIT-blue)](LICENSE)
+
 A [Polars](https://pola.rs) expression plugin that answers one question quickly:
 **is this string a valid peptide sequence?**
 
@@ -33,11 +38,24 @@ df.with_columns(valid=is_peptide("seq"))
 
 ## Install
 
-Not on PyPI yet — build it from source. You'll need a Rust toolchain, plus
-[uv](https://docs.astral.sh/uv/); Python 3.14 and Polars come along for the ride.
+```bash
+uv add polars-is-peptide
+# or: pip install polars-is-peptide
+```
+
+Wheels are published for Linux (x86_64, aarch64), macOS (x86_64, arm64) and Windows
+(x64), so there's nothing to compile — you don't need a Rust toolchain to *use* this.
+
+**Requires Python ≥ 3.14** and Polars ≥ 1.42. The wheels are `abi3-py314`: one wheel per
+platform covers 3.14 and every later 3.x. If you're on an older Python, this release
+won't install; open an issue if you need a 3.9+ build and I'll widen the ABI floor.
+
+To build from source instead, you'll need a Rust toolchain and
+[uv](https://docs.astral.sh/uv/):
 
 ```bash
-git clone <this repo> && cd polars_is_peptide
+git clone https://github.com/drchristhorpe/polars-is-peptide
+cd polars-is-peptide
 uv sync            # fetches Python 3.14, builds the Rust extension, installs it
 uv run pytest      # 46 tests
 ```
