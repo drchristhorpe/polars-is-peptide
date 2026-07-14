@@ -181,9 +181,16 @@ PyPI [Trusted Publishing](https://docs.pypi.org/trusted-publishers/) — there i
 token stored in the repo or in GitHub secrets.
 
 ```bash
-# bump the version in pyproject.toml AND Cargo.toml, add a CHANGELOG entry, then:
-git tag v0.1.0 && git push origin v0.1.0
+# bump the version in pyproject.toml AND Cargo.toml (they must match),
+# add a CHANGELOG entry, commit and push, then:
+git tag v0.1.1 && git push origin v0.1.1
 ```
+
+**Land every doc change before you tag.** The tag is what CI builds, and the README is
+baked into the wheel metadata at build time — that's what PyPI renders on the project
+page. A README fixed *after* tagging will not appear on PyPI, and neither the files nor
+the metadata of a published version can be replaced; the only remedy is another release.
+This caught us on 0.1.0.
 
 That builds Linux (x86_64, aarch64), macOS (x86_64, arm64) and Windows (x64) wheels plus
 an sdist, runs the test suite against each built wheel, and publishes to PyPI. The matrix

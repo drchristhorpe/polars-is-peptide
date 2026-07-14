@@ -1,6 +1,6 @@
 [package]
 name = "polars_is_peptide"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Polars expression plugin for validating peptide sequences"
 license = "MIT"

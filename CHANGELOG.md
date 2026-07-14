@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] — 2026-07-14
+
+No code changes. The plugin, its API and its behaviour are identical to 0.1.0.
+
+### Fixed
+
+- **The project description shown on PyPI.** PyPI renders the README that was baked into
+  the wheel metadata at build time, and the `v0.1.0` tag pointed at the commit *before*
+  the README was updated to document installing from PyPI — so the page told visitors the
+  package was "not on PyPI yet, build from source". Re-releasing is the only fix: PyPI
+  does not allow a file to be replaced once uploaded, nor metadata to be edited in place.
+
+  For future releases: update the README *before* tagging, since the tag is what gets
+  built. The [Releasing](README.md#releasing) runbook now says so.
+
 ## [0.1.0] — 2026-07-14
 
 First release, [on PyPI](https://pypi.org/project/polars-is-peptide/). A Polars
